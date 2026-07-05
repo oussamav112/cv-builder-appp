@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>CV Builder Pro</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons for modern visuals -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- jsPDF Library CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              900: '#0c4a6e',
+            },
+            slate: {
+              850: '#1e293b',
+              950: '#020617',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Smooth Scrollbar for dark theme */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+    /* Safe Area insets for notch and gesture bar */
+    body {
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans select-none antialiased">
+
+  <!-- Header Section -->
+  <header class="bg-slate-900/90 border-b border-slate-800 sticky top-0 z-40 backdrop-blur px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <div class="bg-brand-500 text-white p-2 rounded-xl shadow-lg shadow-brand-500/20">
+        <i class="fa-solid fa-file-invoice text-lg"></i>
+      </div>
+      <div>
+        <h1 class="text-base font-bold tracking-tight bg-gradient-to-r from-white via-slate-100 to-brand-500 bg-clip-text text-transparent">CV Builder Pro</h1>
+        <p class="text-[10px] text-slate-400 font-medium tracking-wide uppercase">Offline Resume Architect</p>
+      </div>
+    </div>
+    
+    <!-- Template Style & Accent Picker -->
+    <div class="flex items-center gap-2">
+      <span class="text-[11px] text-slate-400 font-medium">Accent:</span>
+      <div class="flex gap-1" id="accent-selector">
+        <button onclick="setAccent('brand')" class="w-4 h-4 rounded-full bg-sky-500 ring-2 ring-white/20 transition-all cursor-pointer" title="Sky Blue"></button>
+        <button onclick="setAccent('emerald')" class="w-4 h-4 rounded-full bg-emerald-500 ring-2 ring-transparent hover:ring-white/20 transition-all cursor-pointer" title="Emerald"></button>
+        <button onclick="setAccent('violet')" class="w-4 h-4 rounded-full bg-violet-500 ring-2 ring-transparent hover:ring-white/20 transition-all cursor-pointer" title="Violet"></button>
+        <button onclick="setAccent('amber')" class="w-4 h-4 rounded-full bg-amber-500 ring-2 ring-transparent hover:ring-white/20 transition-all cursor-pointer" title="Amber"></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile View Controls (Tabs) -->
+  <div class="bg-slate-900 border-b border-slate-800 flex sticky top-[53px] z-30">
+    <button onclick="switchTab('editor')" id="tab-editor" class="flex-1 py-3 text-sm font-semibold border-b-2 border-brand-500 text-brand-500 flex items-center justify-center gap-2 transition-all">
+      <i class="fa-solid fa-pen-to-square"></i> Form Editor
+    </button>
+    <button onclick="switchTab('preview')" id="tab-preview" class="flex-1 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 flex items-center justify-center gap-2 transition-all">
+      <i class="fa-solid fa-eye"></i> Design Preview
+    </button>
+  </div>
+
+  <!-- Main Container -->
+  <main class="flex-1 overflow-y-auto px-4 py-4 pb-28">
+    
+    <!-- EDITOR PANEL -->
+    <div id="panel-editor" class="space-y-6 block">
+      
+      <!-- Personal Information Section -->
+      <section class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
+        <div class="flex items-center gap-2.5 mb-4 border-b border-slate-800 pb-3">
+          <i class="fa-solid fa-user text-brand-500 text-lg"></i>
+          <h2 class="text-base font-bold text-slate-100">Personal Information</h2>
+        </div>
+        
+        <div class="space-y-3.5">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Full Name</label>
+            <input type="text" id="input-name" oninput="saveData()" placeholder="John Doe" 
+              class="w-full bg-slate-950 border border-slate-800 focus:border-brand-500 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 outline-none transition-all placeholder:text-slate-600">
+          </div>
+          
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Professional Title</label>
+            <input type="text" id="input-title" oninput="saveData()" placeholder="Senior Software Engineer" 
+              class="w-full bg-slate-950 border border-slate-800 focus:border-brand-500 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 outline-none transition-all placeholder:text-slate-600">
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1">Email Address</label>
+              <input type="email" id="input-email" oninput="saveData()" placeholder="john.doe@email.com" 
+                class="w-full bg-slate-950 border border-slate-800 focus:border-brand-500 rounded-xl px-3 py-2.5 text-xs text-slate-100 outline-none transition-all placeholder:text-slate-600">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1">Phone Number</label>
+              <input type="tel" id="input-phone" oninput="saveData()" placeholder="+1 (555) 019-2834" 
+                class="w-full bg-slate-950 border border-slate-800 focus:border-brand-500 rounded-xl px-3 py-2.5 text-xs text-slate-100 outline-none transition-all placeholder:text-slate-600">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1">Location</label>
+              <input type="text" id="input-location" oninput="saveData()" placeholder="San Francisco, CA" 
+                class="w-full bg-slate-950 border border-slate-800 focus:border-brand-500 rounded-xl px-3 py-2.5 text-xs text-slate-100 outline-none transition-all placeholder:text-slate-600">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1">Website / Portfolio</label>
+              <input type="text" id="input-website" oninput="saveData()" placeholder="johndoe.dev" 
+                class="w-full bg-slate-950 border border-slate-800 focus:border-brand-500 rounded-xl px-3 py-2.5 text-xs text-slate-100 outline-none transition-all placeholder:text-slate-600">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Professional Summary</label>
+            <textarea id="input-summary" oninput="saveData()" rows="3" placeholder="Passionate developer with 5+ years of experience building scalable applications..." 
+              class="w-full bg-slate-950 border border-slate-800 focus:border-brand-500 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 outline-none transition-all placeholder:text-slate-600 resize-none"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- Work Experience Section -->
+      <section class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
+        <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
+          <div class="flex items-center gap-2.5">
+            <i class="fa-solid fa-briefcase text-brand-500 text-lg"></i>
+            <h2 class="text-base font-bold text-slate-100">Work Experience</h2>
+          </div>
+          <button onclick="addExperience()" class="bg-brand-500 hover:bg-brand-600 text-white text-xs font-semibold px-3 py-1.5 rounded-xl flex items-center gap-1 transition-all cursor-pointer">
+            <i class="fa-solid fa-plus"></i> Add
+          </button>
+        </div>
+        
+        <div id="experience-list" class="space-y-4">
+          <!-- Dynamically Added Experience Items -->
+        </div>
+      </section>
+
+      <!-- Education Section -->
+      <section class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
+        <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
+          <div class="flex items-center gap-2.5">
+            <i class="fa-solid fa-graduation-cap text-brand-500 text-lg"></i>
+            <h2 class="text-base font-bold text-slate-100">Education History</h2>
+          </div>
+          <button onclick="addEducation()" class="bg-brand-500 hover:bg-brand-600 text-white text-xs font-semibold px-3 py-1.5 rounded-xl flex items-center gap-1 transition-all cursor-pointer">
+            <i class="fa-solid fa-plus"></i> Add
+          </button>
+        </div>
+        
+        <div id="education-list" class="space-y-4">
+          <!-- Dynamically Added Education Items -->
+        </div>
+      </section>
+
+      <!-- Skills Section -->
+      <section class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
+        <div class="flex items-center gap-2.5 mb-4 border-b border-slate-800 pb-3">
+          <i class="fa-solid fa-award text-brand-500 text-lg"></i>
+          <h2 class="text-base font-bold text-slate-100">Skills</h2>
+        </div>
+        
+        <div class="space-y-3.5">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Add Skills (Comma separated or enter one by one)</label>
+            <div class="flex gap-2">
+              <input type="text" id="skill-input" placeholder="Kotlin, React, AWS" 
+                class="flex-1 bg-slate-950 border border-slate-800 focus:border-brand-500 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 outline-none transition-all placeholder:text-slate-600">
+              <button onclick="addSkillFromInput()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold px-4 rounded-xl text-sm transition-all cursor-pointer">
+                Add
+              </button>
+            </div>
+          </div>
+          
+          <div id="skills-container" class="flex flex-wrap gap-2 pt-2">
+            <!-- Dynamic skills tags -->
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- PREVIEW PANEL -->
+    <div id="panel-preview" class="space-y-6 hidden">
+      <!-- Layout & Design Controls -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
+        <h3 class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-3">CV Design Templates</h3>
+        <div class="grid grid-cols-2 gap-3">
+          <button onclick="setTemplate('corporate')" id="btn-tmpl-corporate" 
+            class="p-3 rounded-xl border-2 border-brand-500 bg-slate-950 text-left transition-all">
+            <span class="block text-sm font-bold text-slate-100">Slate Corporate</span>
+            <span class="block text-[10px] text-slate-400">Classic dual column design for professionals</span>
+          </button>
+          <button onclick="setTemplate('modern')" id="btn-tmpl-modern" 
+            class="p-3 rounded-xl border-2 border-slate-800 bg-slate-950 text-left hover:border-slate-700 transition-all">
+            <span class="block text-sm font-bold text-slate-100">Modern Tech Underline</span>
+            <span class="block text-[10px] text-slate-400">Teal minimalist accent lines, centered title</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Realtime CV Frame -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-1 shadow-xl overflow-hidden">
+        <div class="bg-slate-800 px-3 py-2 flex items-center justify-between text-xs text-slate-400">
+          <span class="font-medium"><i class="fa-solid fa-paper-plane mr-1 text-[10px]"></i> Live A4 Sheet Preview</span>
+          <span class="px-1.5 py-0.5 rounded bg-slate-950 text-[10px] text-brand-500 font-bold uppercase">Dynamic Rendering</span>
+        </div>
+        
+        <!-- Live Preview Content Container (A4 Aspect Ratio Container scaled down for mobile screen) -->
+        <div class="bg-white text-slate-900 p-6 shadow-inner min-h-[480px] text-xs font-serif overflow-y-auto" id="cv-rendered-preview">
+          <!-- Dynamic Live Content Rendered Here in Real-Time -->
+        </div>
+      </div>
+
+      <!-- Export Button -->
+      <button onclick="triggerPdfExportFlow()" 
+        class="w-full py-4 rounded-2xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm tracking-wide shadow-lg shadow-brand-500/25 flex items-center justify-center gap-2.5 transition-all cursor-pointer">
+        <i class="fa-solid fa-file-pdf text-lg"></i> Download High-Res PDF
+      </button>
+    </div>
+
+  </main>
+
+  <!-- MOCK AD BANNER PLACEHOLDER (Fixed Bottom) -->
+  <div class="fixed bottom-0 left-0 right-0 bg-slate-900/95 border-t border-slate-800 py-2.5 px-4 z-40 backdrop-blur flex flex-col items-center justify-center">
+    <div class="text-[9px] uppercase font-bold text-slate-500 mb-1 flex items-center gap-1 tracking-widest">
+      <span class="px-1 py-[1px] bg-amber-500/20 text-amber-500 rounded text-[8px] font-extrabold">Ad</span> Sponsored Advertisement
+    </div>
+    <div class="w-full max-w-[320px] h-[50px] bg-slate-950 border border-dashed border-slate-800 rounded-lg flex items-center justify-center text-xs text-slate-500 font-medium relative overflow-hidden group">
+      <div class="absolute inset-0 bg-gradient-to-r from-transparent via-slate-800/10 to-transparent -translate-x-full animate-[shimmer_2s_infinite]"></div>
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-store text-amber-500/80 animate-bounce"></i>
+        <span>Upgrade to Premium to Remove Ads</span>
+      </div>
+      <span class="absolute top-1 right-1.5 text-[8px] text-slate-600 font-semibold uppercase">Banner (320x50)</span>
+    </div>
+    <!-- Helpful WebView Developer Comment -->
+    <!-- Swap the container above with your AdView XML or use google-mobile-ads SDK dynamic layout binding -->
+  </div>
+
+  <!-- INTERSTITIAL AD OVERLAY CONTAINER (Simulated) -->
+  <div id="interstitial-ad-overlay" class="fixed inset-0 bg-slate-950/98 z-50 flex flex-col items-center justify-center p-6 transition-opacity duration-300 pointer-events-none opacity-0">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 w-full max-w-sm flex flex-col items-center relative text-center shadow-2xl">
+      
+      <!-- Close Button (Initially Hidden/Disabled) -->
+      <button id="ad-close-btn" onclick="closeInterstitialAndDownload()" class="absolute top-4 right-4 text-slate-500 hover:text-white bg-slate-850 p-2 rounded-full w-8 h-8 flex items-center justify-center transition-all opacity-40 cursor-not-allowed" disabled>
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="w-14 h-14 bg-amber-500/10 text-amber-500 rounded-2xl flex items-center justify-center mb-4 text-2xl shadow-lg shadow-amber-500/5">
+        <i class="fa-solid fa-circle-play animate-pulse"></i>
+      </div>
+
+      <span class="px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-500 font-bold text-[10px] uppercase tracking-wider mb-2">Sponsored Offer</span>
+      <h3 class="text-base font-bold text-white mb-1">Resume Optimizer Pro</h3>
+      <p class="text-xs text-slate-400 mb-6">Unlock infinite premium layout templates, AI cover letter generator, and live ATS keyword checker.</p>
+      
+      <!-- Graphic/Simulated Visual Panel -->
+      <div class="w-full aspect-video bg-slate-950 rounded-xl border border-slate-800 flex flex-col items-center justify-center mb-6 p-4 relative overflow-hidden">
+        <div class="flex flex-col items-center gap-1.5 z-10">
+          <i class="fa-solid fa-wand-magic-sparkles text-2xl text-brand-500"></i>
+          <span class="text-xs font-bold text-slate-200">AI ATS Score Optimizer</span>
+          <span class="text-[10px] text-slate-500">Scanning skills match: 98%</span>
+        </div>
+        <div class="absolute -bottom-4 inset-x-0 h-10 bg-gradient-to-t from-brand-500/10 to-transparent"></div>
+      </div>
+
+      <!-- Action Indicator / Timer -->
+      <div id="ad-timer-text" class="text-xs font-semibold text-slate-400 mb-2">
+        Closing sponsored offer in <span id="ad-countdown" class="text-amber-500 font-bold text-sm">3</span>s...
+      </div>
+      <div class="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden">
+        <div id="ad-progress-bar" class="bg-amber-500 h-full w-0 transition-all duration-1000 ease-linear"></div>
+      </div>
+    </div>
+    
+    <div class="mt-4 text-center">
+      <span class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">AdMob Interstitial Ad Integration</span>
+      <p class="text-[9px] text-slate-600 mt-1 max-w-xs">Code hooks provided in index.html to bind with the Google Play Services Ads SDK to load and display real interstitials dynamically.</p>
+    </div>
+  </div>
+
+  <script>
+    // App State Configuration
+    let cvData = {
+      name: "",
+      title: "",
+      email: "",
+      phone: "",
+      location: "",
+      website: "",
+      summary: "",
+      experience: [],
+      education: [],
+      skills: []
+    };
+
+    let activeTab = "editor";
+    let activeTemplate = "corporate";
+    let activeAccent = "brand";
+
+    // Palette Mapping
+    const accentColors = {
+      brand: { bg: 'bg-sky-500', text: 'text-sky-500', hex: '#0ea5e9' },
+      emerald: { bg: 'bg-emerald-500', text: 'text-emerald-500', hex: '#10b981' },
+      violet: { bg: 'bg-violet-500', text: 'text-violet-500', hex: '#8b5cf6' },
+      amber: { bg: 'bg-amber-500', text: 'text-amber-500', hex: '#f59e0b' }
+    };
+
+    // Load Local Data on Init
+    window.addEventListener('DOMContentLoaded', () => {
+      // Load Accent
+      const savedAccent = localStorage.getItem('cv_accent');
+      if (savedAccent && accentColors[savedAccent]) {
+        setAccent(savedAccent);
+      } else {
+        setAccent('brand');
+      }
+
+      // Load Template
+      const savedTemplate = localStorage.getItem('cv_template');
+      if (savedTemplate) {
+        setTemplate(savedTemplate);
+      }
+
+      // Load Form Data
+      const savedData = localStorage.getItem('cv_builder_data');
+      if (savedData) {
+        try {
+          cvData = JSON.parse(savedData);
+          fillFormInputs();
+        } catch (e) {
+          console.error("Error parsing saved data, loading default empty state.", e);
+          initEmptyState();
+        }
+      } else {
+        initEmptyState();
+      }
+
+      renderExperienceList();
+      renderEducationList();
+      renderSkillsChips();
+      renderLivePreview();
+    });
+
+    function initEmptyState() {
+      cvData = {
+        name: "Devin Developer",
+        title: "Senior Fullstack Engineer",
+        email: "devin.codes@email.com",
+        phone: "+1 (415) 555-2364",
+        location: "Silicon Valley, CA",
+        website: "devincodes.net",
+        summary: "High-performing engineer specializing in responsive architectural systems, Kotlin, and Web SDKs. Experienced leading development pipelines and optimizing application performance across offline and dynamic platforms.",
+        experience: [
+          {
+            title: "Lead Systems Architect",
+            company: "TechNexus Systems",
+            location: "San Francisco, CA",
+            start: "2023",
+            end: "Present",
+            description: "Led architectural decisions for distributed offline applications. Decreased compilation latency by 35% and increased data synching efficiency via local storage engines."
+          },
+          {
+            title: "Software Engineer II",
+            company: "AppCraft Labs",
+            location: "San Jose, CA",
+            start: "2020",
+            end: "2023",
+            description: "Developed and maintained Android application builds and hybrid containers. Streamlined cross-platform data mapping with modern MVVM bindings and optimized state flow modules."
+          }
+        ],
+        education: [
+          {
+            degree: "M.S. in Software Engineering",
+            school: "Stanford University",
+            location: "Stanford, CA",
+            gradYear: "2020",
+            description: "Specialized in distributed systems, human-computer interaction, and high-performance layouts."
+          }
+        ],
+        skills: ["Kotlin", "Jetpack Compose", "HTML5", "Tailwind CSS", "JavaScript", "Room DB", "API Integration", "AdMob SDK"]
+      };
+      fillFormInputs();
+      saveData();
+    }
+
+    function fillFormInputs() {
+      document.getElementById('input-name').value = cvData.name || '';
+      document.getElementById('input-title').value = cvData.title || '';
+      document.getElementById('input-email').value = cvData.email || '';
+      document.getElementById('input-phone').value = cvData.phone || '';
+      document.getElementById('input-location').value = cvData.location || '';
+      document.getElementById('input-website').value = cvData.website || '';
+      document.getElementById('input-summary').value = cvData.summary || '';
+    }
+
+    // Tab switcher
+    function switchTab(tab) {
+      activeTab = tab;
+      const tabEd = document.getElementById('tab-editor');
+      const tabPr = document.getElementById('tab-preview');
+      const panelEd = document.getElementById('panel-editor');
+      const panelPr = document.getElementById('panel-preview');
+
+      if (tab === 'editor') {
+        tabEd.classList.add('border-brand-500', 'text-brand-500');
+        tabEd.classList.remove('border-transparent', 'text-slate-400');
+        tabPr.classList.add('border-transparent', 'text-slate-400');
+        tabPr.classList.remove('border-brand-500', 'text-brand-500');
+        panelEd.classList.replace('hidden', 'block');
+        panelPr.classList.replace('block', 'hidden');
+      } else {
+        tabPr.classList.add('border-brand-500', 'text-brand-500');
+        tabPr.classList.remove('border-transparent', 'text-slate-400');
+        tabEd.classList.add('border-transparent', 'text-slate-400');
+        tabEd.classList.remove('border-brand-500', 'text-brand-500');
+        panelPr.classList.replace('hidden', 'block');
+        panelEd.classList.replace('block', 'hidden');
+        renderLivePreview();
+      }
+    }
+
+    // Set accent colors
+    function setAccent(colorName) {
+      activeAccent = colorName;
+      localStorage.setItem('cv_accent', colorName);
+      
+      // Update interactive icons ring & colors dynamically
+      const accentObj = accentColors[colorName];
+      
+      // Target active tab highlight coloring
+      const styleTagId = 'dynamic-accent-styles';
+      let styleTag = document.getElementById(styleTagId);
+      if (!styleTag) {
+        styleTag = document.createElement('style');
+        styleTag.id = styleTagId;
+        document.head.appendChild(styleTag);
+      }
+      
+      styleTag.innerHTML = `
+        .text-brand-500 { color: ${accentObj.hex} !important; }
+        .border-brand-500 { border-color: ${accentObj.hex} !important; }
+        .bg-brand-500 { background-color: ${accentObj.hex} !important; }
+        .hover\\:bg-brand-600:hover { background-color: ${accentObj.hex}d0 !important; }
+        .shadow-brand-500\\/20 { box-shadow: 0 10px 15px -3px ${accentObj.hex}20, 0 4px 6px -4px ${accentObj.hex}20 !important; }
+        .shadow-brand-500\\/25 { box-shadow: 0 10px 15px -3px ${accentObj.hex}25, 0 4px 6px -4px ${accentObj.hex}25 !important; }
+      `;
+
+      // Draw ring selector
+      const selectorDiv = document.getElementById('accent-selector');
+      Array.from(selectorDiv.children).forEach((btn) => {
+        btn.classList.replace('ring-white/20', 'ring-transparent');
+      });
+      
+      const idxMap = { brand: 0, emerald: 1, violet: 2, amber: 3 };
+      selectorDiv.children[idxMap[colorName]].classList.replace('ring-transparent', 'ring-white/20');
+      
+      renderLivePreview();
+    }
+
+    // Set layout template
+    function setTemplate(tmpl) {
+      activeTemplate = tmpl;
+      localStorage.setItem('cv_template', tmpl);
+      
+      const btnCorp = document.getElementById('btn-tmpl-corporate');
+      const btnMod = document.getElementById('btn-tmpl-modern');
+
+      if (tmpl === 'corporate') {
+        btnCorp.classList.add('border-brand-500');
+        btnCorp.classList.remove('border-slate-800');
+        btnMod.classList.add('border-slate-800');
+        btnMod.classList.remove('border-brand-500');
+      } else {
+        btnMod.classList.add('border-brand-500');
+        btnMod.classList.remove('border-slate-800');
+        btnCorp.classList.add('border-slate-800');
+        btnCorp.classList.remove('border-brand-500');
+      }
+
+      renderLivePreview();
+    }
+
+    // Save state to localStorage
+    function saveData() {
+      cvData.name = document.getElementById('input-name').value;
+      cvData.title = document.getElementById('input-title').value;
+      cvData.email = document.getElementById('input-email').value;
+      cvData.phone = document.getElementById('input-phone').value;
+      cvData.location = document.getElementById('input-location').value;
+      cvData.website = document.getElementById('input-website').value;
+      cvData.summary = document.getElementById('input-summary').value;
+
+      localStorage.setItem('cv_builder_data', JSON.stringify(cvData));
+    }
+
+    // --- Dynamic Skills chips handling ---
+    function addSkillFromInput() {
+      const input = document.getElementById('skill-input');
+      const val = input.value.trim();
+      if (val) {
+        // Split by commas to allow multiple entries easily
+        const parts = val.split(',').map(s => s.trim()).filter(Boolean);
+        parts.forEach(p => {
+          if (!cvData.skills.includes(p)) {
+            cvData.skills.push(p);
+          }
+        });
+        input.value = '';
+        saveData();
+        renderSkillsChips();
+        renderLivePreview();
+      }
+    }
+
+    function removeSkill(idx) {
+      cvData.skills.splice(idx, 1);
+      saveData();
+      renderSkillsChips();
+      renderLivePreview();
+    }
+
+    function renderSkillsChips() {
+      const container = document.getElementById('skills-container');
+      container.innerHTML = '';
+      
+      if (cvData.skills.length === 0) {
+        container.innerHTML = `<span class="text-xs text-slate-600 italic">No skills added yet.</span>`;
+        return;
+      }
+
+      cvData.skills.forEach((skill, idx) => {
+        const span = document.createElement('div');
+        span.className = "bg-slate-850 text-slate-200 border border-slate-800 text-xs px-2.5 py-1.5 rounded-xl flex items-center gap-1.5 hover:border-red-500/50 hover:text-white transition-all cursor-pointer";
+        span.onclick = () => removeSkill(idx);
+        span.innerHTML = `
+          <span>${skill}</span>
+          <i class="fa-solid fa-xmark text-[9px] text-slate-500 hover:text-red-400"></i>
+        `;
+        container.appendChild(span);
+      });
+    }
+
+    // --- Dynamic Experience List Handlers ---
+    function addExperience() {
+      cvData.experience.push({
+        title: "",
+        company: "",
+        location: "",
+        start: "",
+        end: "",
+        description: ""
+      });
+      saveData();
+      renderExperienceList();
+      renderLivePreview();
+    }
+
+    function updateExperience(idx, key, value) {
+      cvData.experience[idx][key] = value;
+      saveData();
+      renderLivePreview();
+    }
+
+    function removeExperience(idx) {
+      cvData.experience.splice(idx, 1);
+      saveData();
+      renderExperienceList();
+      renderLivePreview();
+    }
+
+    function renderExperienceList() {
+      const container = document.getElementById('experience-list');
+      container.innerHTML = '';
+
+      if (cvData.experience.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-6 border border-dashed border-slate-800 rounded-xl">
+            <span class="text-xs text-slate-600 block mb-1">No work experience added yet.</span>
+            <button onclick="addExperience()" class="text-xs text-brand-500 font-bold hover:underline">Add First Job</button>
+          </div>`;
+        return;
+      }
+
+      cvData.experience.forEach((item, idx) => {
+        const block = document.createElement('div');
+        block.className = "p-3.5 bg-slate-950 border border-slate-850 rounded-xl space-y-3 relative";
+        block.innerHTML = `
+          <button onclick="removeExperience(${idx})" class="absolute top-3.5 right-3 text-slate-600 hover:text-red-400 transition-all text-xs" title="Remove Entry">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+          <div class="grid grid-cols-2 gap-3 pr-6">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Job Title</label>
+              <input type="text" value="${item.title || ''}" placeholder="Staff iOS Developer" oninput="updateExperience(${idx}, 'title', this.value)"
+                class="w-full bg-slate-900 border border-slate-800 focus:border-brand-500 rounded-lg px-2 py-1.5 text-xs text-slate-100 outline-none">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Company</label>
+              <input type="text" value="${item.company || ''}" placeholder="Google" oninput="updateExperience(${idx}, 'company', this.value)"
+                class="w-full bg-slate-900 border border-slate-800 focus:border-brand-500 rounded-lg px-2 py-1.5 text-xs text-slate-100 outline-none">
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Start Year</label>
+              <input type="text" value="${item.start || ''}" placeholder="2021" oninput="updateExperience(${idx}, 'start', this.value)"
+                class="w-full bg-slate-900 border border-slate-800 focus:border-brand-500 rounded-lg px-2 py-1.5 text-xs text-slate-100 outline-none">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">End Year</label>
+              <input type="text" value="${item.end || ''}" placeholder="Present" oninput="updateExperience(${idx}, 'end', this.value)"
+                class="w-full bg-slate-900 border border-slate-800 focus:border-brand-500 rounded-lg px-2 py-1.5 text-xs text-slate-100 outline-none">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Location</label>
+              <input type="text" value="${item.location || ''}" placeholder="Remote" oninput="updateExperience(${idx}, 'location', this.value)"
+                class="w-full bg-slate-900 border border-slate-800 focus:border-brand-500 rounded-lg px-2 py-1.5 text-xs text-slate-100 outline-none">
+            </div>
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Description / Key Wins</label>
+            <textarea placeholder="Pioneered new interface metrics, resulting in a 20% conversion bump..." oninput="updateExperience(${idx}, 'description', this.value)" rows="2"
+              class="w-full bg-slate-900 border border-slate-800 focus:border-brand-500 rounded-lg px-2 py-1.5 text-xs text-slate-100 outline-none resize-none">${item.description || ''}</textarea>
+          </div>
+        `;
+        container.appendChild(block);
+      });
+    }
+
+
+    // --- Dynamic Education List Handlers ---
+    function addEducation() {
+      cvData.education.push({
+        degree: "",
+        school: "",
+        location: "",
+        gradYear: "",
+        description: ""
+      });
+      saveData();
+      renderEducationList();
+      renderLivePreview();
+    }
+
+    function updateEducation(idx, key, value) {
+      cvData.education[idx][key] = value;
+      saveData();
+      renderLivePreview();
+    }
+
+    function removeEducation(idx) {
+      cvData.education.splice(idx, 1);
+      saveData();
+      renderEducationList();
+      renderLivePreview();
+    }
+
+    function renderEducationList() {
+      const container = document.getElementById('education-list');
+      container.innerHTML = '';
+
+      if (cvData.education.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-6 border border-dashed border-slate-800 rounded-xl">
+            <span class="text-xs text-slate-600 block mb-1">No education added yet.</span>
+            <button onclick="addEducation()" class="text-xs text-brand-500 font-bold hover:underline">Add School</button>
+          </div>`;
+        return;
+      }
+
+      cvData.education.forEach((item, idx) => {
+        const block = document.createElement('div');
+        block.className = "p-3.5 bg-slate-950 border border-slate-850 rounded-xl space-y-3 relative";
+        block.innerHTML = `
+          <button onclick="removeEducation(${idx})" class="absolute top-3.5 right-3 text-slate-600 hover:text-red-400 transition-all text-xs" title="Remove Entry">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+          <div class="grid grid-cols-2 gap-3 pr-6">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Degree / Cert</label>
+              <input type="text" value="${item.degree || ''}" placeholder="B.S. Computer Science" oninput="updateEducation(${idx}, 'degree', this.value)"
+                class="w-full bg-slate-900 border border-slate-800 focus:border-brand-500 rounded-lg px-2 py-1.5 text-xs text-slate-100 outline-none">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">School</label>
+              <input type="text" value="${item.school || ''}" placeholder="MIT" oninput="updateEducation(${idx}, 'school', this.value)"
+                class="w-full bg-slate-900 border border-slate-800 focus:border-brand-500 rounded-lg px-2 py-1.5 text-xs text-slate-100 outline-none">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Graduation Year</label>
+              <input type="text" value="${item.gradYear || ''}" placeholder="2022" oninput="updateEducation(${idx}, 'gradYear', this.value)"
+                class="w-full bg-slate-900 border border-slate-800 focus:border-brand-500 rounded-lg px-2 py-1.5 text-xs text-slate-100 outline-none">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Location</label>
+              <input type="text" value="${item.location || ''}" placeholder="Boston, MA" oninput="updateEducation(${idx}, 'location', this.value)"
+                class="w-full bg-slate-900 border border-slate-800 focus:border-brand-500 rounded-lg px-2 py-1.5 text-xs text-slate-100 outline-none">
+            </div>
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Description / Honors (Optional)</label>
+            <textarea placeholder="GPA 3.9/4.0. Thesis on mobile state management patterns..." oninput="updateEducation(${idx}, 'description', this.value)" rows="1"
+              class="w-full bg-slate-900 border border-slate-800 focus:border-brand-500 rounded-lg px-2 py-1.5 text-xs text-slate-100 outline-none resize-none">${item.description || ''}</textarea>
+          </div>
+        `;
+        container.appendChild(block);
+      });
+    }
+
+    // --- HTML Live Preview Builder ---
+    function renderLivePreview() {
+      const container = document.getElementById('cv-rendered-preview');
+      const hexColor = accentColors[activeAccent].hex;
+
+      if (!cvData.name && !cvData.title && !cvData.email) {
+        container.innerHTML = `
+          <div class="flex flex-col items-center justify-center py-20 text-slate-400">
+            <i class="fa-solid fa-receipt text-3xl mb-2 text-slate-300"></i>
+            <span class="text-sm font-semibold">Ready to Architect!</span>
+            <span class="text-[10px] text-slate-500">Fill details in the Editor tab to load.</span>
+          </div>`;
+        return;
+      }
+
+      let html = '';
+
+      if (activeTemplate === 'corporate') {
+        // --- Template: Corporate Dual Column ---
+        html = `
+          <div class="font-sans antialiased max-w-[800px] mx-auto text-slate-800 text-[10px] leading-relaxed">
+            <!-- Header banner with chosen accent bar -->
+            <div class="border-l-4 pl-3.5 mb-5" style="border-color: ${hexColor}">
+              <h2 class="text-lg font-extrabold text-slate-900 tracking-tight uppercase">${cvData.name || 'Your Full Name'}</h2>
+              <div class="text-xs font-bold uppercase tracking-wide" style="color: ${hexColor}">${cvData.title || 'Professional Title'}</div>
+              
+              <!-- Contact Details Grid -->
+              <div class="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-slate-600 text-[9px] font-medium border-t border-slate-100 pt-1.5">
+                ${cvData.email ? `<span><i class="fa-solid fa-envelope mr-1"></i>${cvData.email}</span>` : ''}
+                ${cvData.phone ? `<span><i class="fa-solid fa-phone mr-1"></i>${cvData.phone}</span>` : ''}
+                ${cvData.location ? `<span><i class="fa-solid fa-map-marker-alt mr-1"></i>${cvData.location}</span>` : ''}
+                ${cvData.website ? `<span><i class="fa-solid fa-globe mr-1"></i>${cvData.website}</span>` : ''}
+              </div>
+            </div>
+
+            <!-- Main Split Row -->
+            <div class="grid grid-cols-12 gap-5">
+              
+              <!-- Left Content Column -->
+              <div class="col-span-8 space-y-4">
+                
+                <!-- Professional Summary -->
+                ${cvData.summary ? `
+                <div>
+                  <h3 class="text-slate-900 font-extrabold text-[10px] uppercase tracking-wider mb-1.5 border-b border-slate-200 pb-0.5">Professional Summary</h3>
+                  <p class="text-slate-700 leading-normal text-justify text-[9.5px]">${cvData.summary}</p>
+                </div>` : ''}
+
+                <!-- Experience History -->
+                <div>
+                  <h3 class="text-slate-900 font-extrabold text-[10px] uppercase tracking-wider mb-2 border-b border-slate-200 pb-0.5">Work Experience</h3>
+                  <div class="space-y-3">
+                    ${cvData.experience.length === 0 ? '<p class="italic text-slate-400">No experience items yet.</p>' : ''}
+                    ${cvData.experience.map(exp => `
+                      <div>
+                        <div class="flex justify-between items-start font-bold text-slate-900 text-[10px]">
+                          <span>${exp.title || 'Job Title'}</span>
+                          <span class="text-slate-500 font-semibold text-[9px]">${exp.start || ''} – ${exp.end || ''}</span>
+                        </div>
+                        <div class="flex justify-between text-slate-600 font-semibold text-[9px] mb-1">
+                          <span>${exp.company || 'Company Name'}</span>
+                          <span class="italic text-slate-400">${exp.location || ''}</span>
+                        </div>
+                        ${exp.description ? `<p class="text-slate-700 leading-normal pl-2 border-l border-slate-100">${exp.description}</p>` : ''}
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Right Sidebar Column -->
+              <div class="col-span-4 space-y-4 border-l border-slate-100 pl-4">
+                
+                <!-- Skills Chips -->
+                <div>
+                  <h3 class="text-slate-900 font-extrabold text-[10px] uppercase tracking-wider mb-2 border-b border-slate-200 pb-0.5">Core Skills</h3>
+                  <div class="flex flex-wrap gap-1">
+                    ${cvData.skills.length === 0 ? '<p class="italic text-slate-400">No skills added yet.</p>' : ''}
+                    ${cvData.skills.map(skill => `
+                      <span class="bg-slate-100 text-slate-800 font-bold px-2 py-0.5 rounded text-[8.5px] tracking-wide border border-slate-200/50">${skill}</span>
+                    `).join('')}
+                  </div>
+                </div>
+
+                <!-- Education -->
+                <div>
+                  <h3 class="text-slate-900 font-extrabold text-[10px] uppercase tracking-wider mb-2 border-b border-slate-200 pb-0.5">Education</h3>
+                  <div class="space-y-3">
+                    ${cvData.education.length === 0 ? '<p class="italic text-slate-400">No education entries yet.</p>' : ''}
+                    ${cvData.education.map(edu => `
+                      <div>
+                        <div class="font-bold text-slate-900 text-[9.5px]">${edu.degree || 'Degree'}</div>
+                        <div class="text-slate-600 font-semibold text-[8.5px]">${edu.school || 'School/University'}</div>
+                        <div class="flex justify-between text-slate-400 text-[8px] italic mt-0.5">
+                          <span>${edu.gradYear || ''}</span>
+                          <span>${edu.location || ''}</span>
+                        </div>
+                        ${edu.description ? `<p class="text-slate-500 text-[8px] leading-relaxed mt-0.5">${edu.description}</p>` : ''}
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+        `;
+      } else {
+        // --- Template: Modern Underline Tech ---
+        html = `
+          <div class="font-sans antialiased max-w-[800px] mx-auto text-slate-800 text-[10px] leading-relaxed">
+            <!-- Header Centered Section -->
+            <div class="text-center mb-6">
+              <h2 class="text-xl font-black text-slate-900 tracking-tight uppercase">${cvData.name || 'Your Full Name'}</h2>
+              <div class="text-xs font-extrabold tracking-widest uppercase mt-0.5" style="color: ${hexColor}">${cvData.title || 'Professional Title'}</div>
+              
+              <div class="flex justify-center flex-wrap gap-3 mt-3 text-[9px] font-medium text-slate-500">
+                ${cvData.email ? `<span><i class="fa-solid fa-envelope mr-1" style="color: ${hexColor}"></i>${cvData.email}</span>` : ''}
+                ${cvData.phone ? `<span><i class="fa-solid fa-phone mr-1" style="color: ${hexColor}"></i>${cvData.phone}</span>` : ''}
+                ${cvData.location ? `<span><i class="fa-solid fa-map-marker-alt mr-1" style="color: ${hexColor}"></i>${cvData.location}</span>` : ''}
+                ${cvData.website ? `<span><i class="fa-solid fa-globe mr-1" style="color: ${hexColor}"></i>${cvData.website}</span>` : ''}
+              </div>
+              <div class="h-[2px] w-12 mx-auto mt-4 rounded-full" style="background-color: ${hexColor}"></div>
+            </div>
+
+            <div class="space-y-4">
+              <!-- Summary -->
+              ${cvData.summary ? `
+              <div>
+                <h3 class="font-bold text-slate-900 text-[10px] uppercase tracking-widest mb-1" style="color: ${hexColor}">01. Professional Profile</h3>
+                <p class="text-slate-700 leading-normal text-justify text-[9.5px]">${cvData.summary}</p>
+              </div>` : ''}
+
+              <!-- Skills -->
+              <div>
+                <h3 class="font-bold text-slate-900 text-[10px] uppercase tracking-widest mb-1.5" style="color: ${hexColor}">02. Core Capabilities</h3>
+                <div class="flex flex-wrap gap-1.5">
+                  ${cvData.skills.length === 0 ? '<p class="italic text-slate-400">No skills added yet.</p>' : ''}
+                  ${cvData.skills.map(skill => `
+                    <span class="bg-slate-50 text-slate-900 font-semibold px-2 py-0.5 rounded border-b-2 text-[8.5px]" style="border-color: ${hexColor}">${skill}</span>
+                  `).join('')}
+                </div>
+              </div>
+
+              <!-- Experience -->
+              <div>
+                <h3 class="font-bold text-slate-900 text-[10px] uppercase tracking-widest mb-2" style="color: ${hexColor}">03. Professional History</h3>
+                <div class="space-y-3.5">
+                  ${cvData.experience.length === 0 ? '<p class="italic text-slate-400">No experience items yet.</p>' : ''}
+                  ${cvData.experience.map(exp => `
+                    <div class="group">
+                      <div class="flex justify-between items-baseline font-bold text-slate-900 text-[10px]">
+                        <span>${exp.title || 'Job Title'}</span>
+                        <span class="text-slate-400 text-[8.5px] font-medium">${exp.start || ''} – ${exp.end || ''}</span>
+                      </div>
+                      <div class="flex justify-between text-slate-500 font-semibold text-[8.5px] mt-0.5 mb-1.5">
+                        <span>${exp.company || 'Company'} &bull; <span class="italic text-slate-400 font-normal">${exp.location || ''}</span></span>
+                      </div>
+                      ${exp.description ? `<p class="text-slate-700 leading-normal text-[9px] pl-3 border-l-2 border-slate-200">${exp.description}</p>` : ''}
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+
+              <!-- Education -->
+              <div>
+                <h3 class="font-bold text-slate-900 text-[10px] uppercase tracking-widest mb-2" style="color: ${hexColor}">04. Education & Qualifications</h3>
+                <div class="grid grid-cols-2 gap-4">
+                  ${cvData.education.length === 0 ? '<div class="col-span-2 italic text-slate-400 text-xs">No education entries yet.</div>' : ''}
+                  ${cvData.education.map(edu => `
+                    <div class="border-l-2 pl-3 border-slate-200">
+                      <div class="font-bold text-slate-900 text-[9px]">${edu.degree || 'Degree'}</div>
+                      <div class="text-slate-500 text-[8.5px] mt-0.5 font-semibold">${edu.school || 'School'}</div>
+                      <div class="text-[8px] text-slate-400 font-medium mt-0.5">${edu.gradYear || ''} | ${edu.location || ''}</div>
+                      ${edu.description ? `<p class="text-slate-400 text-[8px] italic mt-1 leading-normal">${edu.description}</p>` : ''}
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      container.innerHTML = html;
+    }
+
+    // --- MOCK ADMOB INTERSTITIAL FLOW ---
+    function triggerPdfExportFlow() {
+      // Check if native Android AdMob bridge is available
+      if (window.CVBuilderAndroid && typeof window.CVBuilderAndroid.showInterstitialAd === 'function') {
+        window.CVBuilderAndroid.showInterstitialAd();
+        return;
+      }
+
+      // Toggle Interstitial ad screen ON (Opacify & enable input capture)
+      const overlay = document.getElementById('interstitial-ad-overlay');
+      overlay.classList.remove('pointer-events-none', 'opacity-0');
+      overlay.classList.add('opacity-100');
+
+      let count = 3;
+      const counterSpan = document.getElementById('ad-countdown');
+      const timerText = document.getElementById('ad-timer-text');
+      const progressBar = document.getElementById('ad-progress-bar');
+      const closeBtn = document.getElementById('ad-close-btn');
+
+      // Reset values
+      counterSpan.innerText = count;
+      progressBar.style.width = '0%';
+      closeBtn.disabled = true;
+      closeBtn.classList.add('opacity-40', 'cursor-not-allowed');
+      closeBtn.classList.remove('opacity-100', 'hover:bg-slate-800');
+
+      // Start animations and timers
+      setTimeout(() => {
+        progressBar.style.width = '100%';
+      }, 50);
+
+      const interval = setInterval(() => {
+        count--;
+        if (count > 0) {
+          counterSpan.innerText = count;
+        } else {
+          clearInterval(interval);
+          
+          // Show that close button is now active
+          timerText.innerHTML = `<span class="text-emerald-500 font-bold"><i class="fa-solid fa-check-circle mr-1"></i> Ad complete.</span> Ready to download.`;
+          closeBtn.disabled = false;
+          closeBtn.classList.remove('opacity-40', 'cursor-not-allowed');
+          closeBtn.classList.add('opacity-100', 'hover:bg-slate-800');
+          
+          // Automatically close ad and proceed after 0.5s for seamless premium experience
+          setTimeout(() => {
+            closeInterstitialAndDownload();
+          }, 600);
+        }
+      }, 1000);
+    }
+
+    function closeInterstitialAndDownload() {
+      const overlay = document.getElementById('interstitial-ad-overlay');
+      overlay.classList.add('pointer-events-none', 'opacity-0');
+      overlay.classList.remove('opacity-100');
+
+      // Now run actual jspdf generation
+      generatePremiumPDF();
+    }
+
+    // --- EXPERT JSPDF GENERATOR IMPLEMENTATION ---
+    function generatePremiumPDF() {
+      try {
+        const { jsPDF } = window.jspdf;
+        
+        // Initialize an A4 Portrait Document (width: 210mm, height: 297mm)
+        const doc = new jsPDF({
+          orientation: 'portrait',
+          unit: 'mm',
+          format: 'a4'
+        });
+
+        const accentColorHex = accentColors[activeAccent].hex;
+        
+        // Convert hex to rgb
+        const r = parseInt(accentColorHex.slice(1, 3), 16);
+        const g = parseInt(accentColorHex.slice(3, 5), 16);
+        const b = parseInt(accentColorHex.slice(5, 7), 16);
+
+        let y = 20; // Top Margin
+        const marginX = 15;
+        const pageHeight = 297;
+        const pageWidth = 210;
+        const contentWidth = pageWidth - (2 * marginX);
+
+        // Helper function to handle vertical page overflows
+        function checkPageBreak(neededHeight) {
+          if (y + neededHeight > (pageHeight - 20)) {
+            doc.addPage();
+            y = 20; // Reset to top
+            return true;
+          }
+          return false;
+        }
+
+        // Clean values safely
+        const nameVal = (cvData.name || 'Your Full Name').toUpperCase();
+        const titleVal = (cvData.title || 'Professional Title').toUpperCase();
+        const summaryVal = cvData.summary || '';
+
+        if (activeTemplate === 'corporate') {
+          // ==========================================
+          // STYLE 1: CORPORATE SLATE DUAL COLUMN
+          // ==========================================
+          
+          // Name and Header Layout
+          doc.setFillColor(r, g, b);
+          doc.rect(marginX, y, 2.5, 14, 'F'); // Vertical side accent accent bar
+
+          doc.setTextColor(23, 23, 23); // Slate-900
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(16);
+          doc.text(nameVal, marginX + 5, y + 5);
+
+          doc.setTextColor(r, g, b); // Accent color
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(10);
+          doc.text(titleVal, marginX + 5, y + 10);
+
+          y += 18;
+
+          // Contact Row
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(8.5);
+          doc.setTextColor(100, 116, 139); // Slate-500
+          
+          let contactParts = [];
+          if (cvData.email) contactParts.push(`Email: ${cvData.email}`);
+          if (cvData.phone) contactParts.push(`Phone: ${cvData.phone}`);
+          if (cvData.location) contactParts.push(`Loc: ${cvData.location}`);
+          if (cvData.website) contactParts.push(`Web: ${cvData.website}`);
+          
+          const contactStr = contactParts.join('  |  ');
+          doc.text(contactStr, marginX, y);
+
+          // Divider Line
+          doc.setDrawColor(241, 245, 249); // slate-100
+          doc.setLineWidth(0.4);
+          doc.line(marginX, y + 3, pageWidth - marginX, y + 3);
+          
+          y += 10;
+
+          // Split Column Layout widths
+          const leftColWidth = (contentWidth * 0.65);
+          const rightColX = marginX + leftColWidth + 6;
+          const rightColWidth = contentWidth - leftColWidth - 6;
+
+          let leftColY = y;
+          let rightColY = y;
+
+          // LEFT COLUMN RENDER
+          // A. Professional Summary
+          if (summaryVal) {
+            doc.setTextColor(23, 23, 23);
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(9.5);
+            doc.text("PROFESSIONAL SUMMARY", marginX, leftColY);
+            
+            doc.setDrawColor(r, g, b);
+            doc.setLineWidth(0.3);
+            doc.line(marginX, leftColY + 1.5, marginX + leftColWidth, leftColY + 1.5);
+            leftColY += 6;
+
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(8);
+            doc.setTextColor(51, 65, 85); // Slate-700
+            const sumLines = doc.splitTextToSize(summaryVal, leftColWidth);
+            doc.text(sumLines, marginX, leftColY);
+            leftColY += (sumLines.length * 4) + 6;
+          }
+
+          // B. Experience Section
+          doc.setTextColor(23, 23, 23);
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(9.5);
+          doc.text("WORK EXPERIENCE", marginX, leftColY);
+          
+          doc.setDrawColor(r, g, b);
+          doc.line(marginX, leftColY + 1.5, marginX + leftColWidth, leftColY + 1.5);
+          leftColY += 6;
+
+          if (cvData.experience.length === 0) {
+            doc.setFont("helvetica", "italic");
+            doc.setFontSize(8.5);
+            doc.setTextColor(148, 163, 184);
+            doc.text("No experience registered.", marginX, leftColY);
+            leftColY += 8;
+          } else {
+            cvData.experience.forEach(exp => {
+              // Ensure we check page boundaries
+              if (leftColY > 260) {
+                doc.addPage();
+                leftColY = 20;
+                rightColY = 20;
+              }
+
+              doc.setFont("helvetica", "bold");
+              doc.setFontSize(8.5);
+              doc.setTextColor(15, 23, 42); // slate-900
+              doc.text(exp.title || 'Job Title', marginX, leftColY);
+              
+              const dates = `${exp.start || ''} - ${exp.end || ''}`;
+              doc.setFont("helvetica", "normal");
+              doc.setTextColor(100, 116, 139);
+              doc.text(dates, marginX + leftColWidth - doc.getTextWidth(dates), leftColY);
+              
+              leftColY += 4;
+              
+              doc.setFont("helvetica", "bold");
+              doc.setFontSize(8);
+              doc.setTextColor(71, 85, 105);
+              const compText = exp.company || 'Company';
+              doc.text(compText, marginX, leftColY);
+              
+              if (exp.location) {
+                doc.setFont("helvetica", "italic");
+                doc.setTextColor(148, 163, 184);
+                doc.text(exp.location, marginX + doc.getTextWidth(compText) + 3, leftColY);
+              }
+              
+              leftColY += 4;
+
+              if (exp.description) {
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(8);
+                doc.setTextColor(51, 65, 85);
+                const descLines = doc.splitTextToSize(exp.description, leftColWidth - 3);
+                
+                // Draw a nice vertical bullet pipe
+                doc.setDrawColor(241, 245, 249);
+                doc.line(marginX + 0.5, leftColY - 1, marginX + 0.5, leftColY + (descLines.length * 3.8) - 2);
+
+                doc.text(descLines, marginX + 3, leftColY);
+                leftColY += (descLines.length * 3.8) + 4;
+              }
+            });
+          }
+
+
+          // RIGHT COLUMN RENDER
+          // A. Core Skills Chips
+          doc.setTextColor(23, 23, 23);
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(9.5);
+          doc.text("CORE CAPABILITIES", rightColX, rightColY);
+          
+          doc.setDrawColor(r, g, b);
+          doc.line(rightColX, rightColY + 1.5, rightColX + rightColWidth, rightColY + 1.5);
+          rightColY += 6;
+
+          if (cvData.skills.length === 0) {
+            doc.setFont("helvetica", "italic");
+            doc.setFontSize(8.5);
+            doc.setTextColor(148, 163, 184);
+            doc.text("No skills registered.", rightColX, rightColY);
+            rightColY += 8;
+          } else {
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(8);
+            doc.setTextColor(30, 41, 59);
+
+            let rowX = rightColX;
+            let rowY = rightColY;
+            const rowSpacingY = 5;
+
+            cvData.skills.forEach(skill => {
+              const skillWidth = doc.getTextWidth(skill) + 4;
+              if (rowX + skillWidth > (pageWidth - marginX)) {
+                rowX = rightColX;
+                rowY += rowSpacingY;
+              }
+
+              // Draw beautiful soft skill badge border
+              doc.setFillColor(248, 250, 252); // slate-50
+              doc.setDrawColor(226, 232, 240); // slate-200
+              doc.rect(rowX, rowY - 3, skillWidth, 4.2, 'FD');
+
+              doc.setTextColor(51, 65, 85);
+              doc.text(skill, rowX + 2, rowY);
+              rowX += skillWidth + 2;
+            });
+
+            rightColY = rowY + 10;
+          }
+
+          // B. Education History
+          doc.setTextColor(23, 23, 23);
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(9.5);
+          doc.text("EDUCATION", rightColX, rightColY);
+          
+          doc.setDrawColor(r, g, b);
+          doc.line(rightColX, rightColY + 1.5, rightColX + rightColWidth, rightColY + 1.5);
+          rightColY += 6;
+
+          if (cvData.education.length === 0) {
+            doc.setFont("helvetica", "italic");
+            doc.setFontSize(8.5);
+            doc.setTextColor(148, 163, 184);
+            doc.text("No education items.", rightColX, rightColY);
+            rightColY += 8;
+          } else {
+            cvData.education.forEach(edu => {
+              doc.setFont("helvetica", "bold");
+              doc.setFontSize(8.5);
+              doc.setTextColor(15, 23, 42);
+              doc.text(edu.degree || 'Degree', rightColX, rightColY);
+              rightColY += 4;
+
+              doc.setFont("helvetica", "semibold");
+              doc.setFontSize(8);
+              doc.setTextColor(71, 85, 105);
+              doc.text(edu.school || 'University', rightColX, rightColY);
+              rightColY += 4;
+
+              doc.setFont("helvetica", "italic");
+              doc.setFontSize(7.5);
+              doc.setTextColor(148, 163, 184);
+              const gradAndLoc = `${edu.gradYear || ''}   ${edu.location || ''}`;
+              doc.text(gradAndLoc, rightColX, rightColY);
+              rightColY += 4;
+
+              if (edu.description) {
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(7.5);
+                doc.setTextColor(100, 116, 139);
+                const descLines = doc.splitTextToSize(edu.description, rightColWidth);
+                doc.text(descLines, rightColX, rightColY);
+                rightColY += (descLines.length * 3.5) + 3;
+              }
+              rightColY += 2;
+            });
+          }
+
+        } else {
+          // ==========================================
+          // STYLE 2: MODERN UNDERLINE TECH TEMPLATE
+          // ==========================================
+          
+          // Large Centered Title Layout
+          doc.setTextColor(15, 23, 42);
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(18);
+          doc.text(nameVal, pageWidth / 2, y, { align: 'center' });
+          y += 5.5;
+
+          doc.setTextColor(r, g, b);
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(11);
+          doc.text(titleVal, pageWidth / 2, y, { align: 'center' });
+          y += 7.5;
+
+          // Horizontal accent pill
+          doc.setFillColor(r, g, b);
+          doc.rect((pageWidth / 2) - 10, y, 20, 0.8, 'F');
+          y += 6;
+
+          // Centered contact links
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(8);
+          doc.setTextColor(100, 116, 139);
+
+          let linksList = [];
+          if (cvData.email) linksList.push(`Email: ${cvData.email}`);
+          if (cvData.phone) linksList.push(`Tel: ${cvData.phone}`);
+          if (cvData.location) linksList.push(`Loc: ${cvData.location}`);
+          if (cvData.website) linksList.push(`Web: ${cvData.website}`);
+          
+          doc.text(linksList.join('   •   '), pageWidth / 2, y, { align: 'center' });
+          y += 12;
+
+          // 1. Professional Profile
+          if (summaryVal) {
+            checkPageBreak(25);
+            doc.setTextColor(r, g, b);
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(9.5);
+            doc.text("01. PROFESSIONAL PROFILE", marginX, y);
+            y += 4.5;
+
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(8.5);
+            doc.setTextColor(51, 65, 85);
+            const summaryLines = doc.splitTextToSize(summaryVal, contentWidth);
+            doc.text(summaryLines, marginX, y);
+            y += (summaryLines.length * 4) + 8;
+          }
+
+          // 2. Core Capabilities
+          if (cvData.skills.length > 0) {
+            checkPageBreak(25);
+            doc.setTextColor(r, g, b);
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(9.5);
+            doc.text("02. CORE CAPABILITIES", marginX, y);
+            y += 4.5;
+
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(8);
+            doc.setTextColor(30, 41, 59);
+
+            let rowX = marginX;
+            let rowY = y;
+            const rowSpacingY = 5.2;
+
+            cvData.skills.forEach(skill => {
+              const skillWidth = doc.getTextWidth(skill) + 5;
+              if (rowX + skillWidth > (pageWidth - marginX)) {
+                rowX = marginX;
+                rowY += rowSpacingY;
+              }
+
+              // Underline Accent design
+              doc.setFillColor(248, 250, 252);
+              doc.rect(rowX, rowY - 3, skillWidth, 4.2, 'F');
+              doc.setDrawColor(r, g, b);
+              doc.setLineWidth(0.4);
+              doc.line(rowX, rowY + 1.2, rowX + skillWidth, rowY + 1.2);
+
+              doc.setTextColor(30, 41, 59);
+              doc.text(skill, rowX + 2.5, rowY);
+              rowX += skillWidth + 3;
+            });
+
+            y = rowY + 10;
+          }
+
+          // 3. Experience History
+          checkPageBreak(30);
+          doc.setTextColor(r, g, b);
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(9.5);
+          doc.text("03. WORK HISTORY", marginX, y);
+          y += 6;
+
+          if (cvData.experience.length === 0) {
+            doc.setFont("helvetica", "italic");
+            doc.setFontSize(8.5);
+            doc.setTextColor(148, 163, 184);
+            doc.text("No history registered.", marginX, y);
+            y += 10;
+          } else {
+            cvData.experience.forEach(exp => {
+              // Measure needed space roughly
+              let descLinesCount = 0;
+              let descLines = [];
+              if (exp.description) {
+                descLines = doc.splitTextToSize(exp.description, contentWidth - 4);
+                descLinesCount = descLines.length;
+              }
+              const neededSpace = 12 + (descLinesCount * 4);
+              checkPageBreak(neededSpace);
+
+              doc.setFont("helvetica", "bold");
+              doc.setFontSize(9);
+              doc.setTextColor(15, 23, 42);
+              doc.text(exp.title || 'Job Title', marginX, y);
+
+              doc.setFont("helvetica", "normal");
+              doc.setFontSize(8.5);
+              doc.setTextColor(100, 116, 139);
+              const dates = `${exp.start || ''} - ${exp.end || ''}`;
+              doc.text(dates, pageWidth - marginX - doc.getTextWidth(dates), y);
+
+              y += 4;
+
+              doc.setFont("helvetica", "bold");
+              doc.setFontSize(8);
+              doc.setTextColor(71, 85, 105);
+              doc.text(`${exp.company || 'Company'} • ${exp.location || 'Location'}`, marginX, y);
+              
+              y += 4;
+
+              if (exp.description) {
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(8);
+                doc.setTextColor(51, 65, 85);
+                
+                // Tech line accent indicators
+                doc.setDrawColor(226, 232, 240);
+                doc.setLineWidth(0.4);
+                doc.line(marginX + 0.5, y - 1, marginX + 0.5, y + (descLinesCount * 3.8) - 2.5);
+
+                doc.text(descLines, marginX + 3.5, y);
+                y += (descLinesCount * 3.8) + 4;
+              }
+              y += 2.5;
+            });
+          }
+
+          // 4. Education history
+          checkPageBreak(30);
+          doc.setTextColor(r, g, b);
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(9.5);
+          doc.text("04. EDUCATION & TRAINING", marginX, y);
+          y += 6;
+
+          if (cvData.education.length === 0) {
+            doc.setFont("helvetica", "italic");
+            doc.setFontSize(8.5);
+            doc.setTextColor(148, 163, 184);
+            doc.text("No history registered.", marginX, y);
+            y += 10;
+          } else {
+            // Render side by side columns for elegant spacing
+            const eduColWidth = (contentWidth / 2) - 4;
+            let currentX = marginX;
+            let currentY = y;
+            let maxHeightInRow = 0;
+
+            cvData.education.forEach((edu, idx) => {
+              if (idx > 0 && idx % 2 === 0) {
+                // Shift down
+                currentX = marginX;
+                currentY += maxHeightInRow + 6;
+                maxHeightInRow = 0;
+              } else if (idx > 0) {
+                currentX = marginX + eduColWidth + 8;
+              }
+
+              // Check page boundary
+              if (currentY > 260) {
+                doc.addPage();
+                currentY = 20;
+                y = 20;
+                currentX = marginX;
+              }
+
+              let localY = currentY;
+              
+              doc.setDrawColor(226, 232, 240);
+              doc.setLineWidth(0.5);
+              doc.line(currentX, localY, currentX, localY + 12);
+
+              doc.setFont("helvetica", "bold");
+              doc.setFontSize(8.5);
+              doc.setTextColor(15, 23, 42);
+              doc.text(edu.degree || 'Degree', currentX + 3.5, localY + 3);
+              localY += 3.5;
+
+              doc.setFont("helvetica", "semibold");
+              doc.setFontSize(8);
+              doc.setTextColor(100, 116, 139);
+              doc.text(edu.school || 'School', currentX + 3.5, localY + 3.5);
+              localY += 4;
+
+              doc.setFont("helvetica", "normal");
+              doc.setFontSize(7.5);
+              doc.setTextColor(148, 163, 184);
+              doc.text(`${edu.gradYear || ''} | ${edu.location || ''}`, currentX + 3.5, localY + 3.5);
+              localY += 4;
+
+              if (edu.description) {
+                const descLines = doc.splitTextToSize(edu.description, eduColWidth - 5);
+                doc.setFont("helvetica", "italic");
+                doc.setFontSize(7.5);
+                doc.setTextColor(100, 116, 139);
+                doc.text(descLines, currentX + 3.5, localY + 3);
+                localY += (descLines.length * 3.5) + 3;
+              }
+
+              const boxHeight = localY - currentY;
+              if (boxHeight > maxHeightInRow) {
+                maxHeightInRow = boxHeight;
+              }
+            });
+            y = currentY + maxHeightInRow + 10;
+          }
+        }
+
+        // Generate Base64 Output and share with Android environment
+        const base64Data = doc.output('datauristring');
+        const pdfFileName = `${(cvData.name || 'Resume').replace(/\s+/g, '_')}_A4_Resume.pdf`;
+
+        if (window.CVBuilderAndroid) {
+          // Fire premium saved broadcast in Kotlin Android app
+          window.CVBuilderAndroid.downloadPDF(base64Data, pdfFileName);
+        } else {
+          // Standard browser client download fallback
+          const link = document.createElement('a');
+          link.href = base64Data;
+          link.download = pdfFileName;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          alert("A4 PDF Generated and downloaded locally!");
+        }
+
+      } catch (err) {
+        console.error("PDF Architectural render error:", err);
+        alert("Failed to render high-res PDF. Ensure format compatibility and try again.");
+      }
+    }
+  </script>
+</body>
+</html>

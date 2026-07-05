@@ -1,0 +1,6 @@
+{
+  "name": "CV Builder",
+  "description": "A professional, offline CV Builder mobile app with responsive interactive editor inputs, template customization, live A4 sheet preview, and PDF compilation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
