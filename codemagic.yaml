@@ -7,8 +7,10 @@ workflows:
     environment:
       java: 17
     scripts:
-      - name: Build Android Debug APK
+      - name: Fix and Build Android
         script: |
+          # تصحيح ملف gradlew أوتوماتيكياً فالسيرفر
+          gradle wrapper
           chmod +x gradlew
           ./gradlew assembleDebug
     artifacts:
